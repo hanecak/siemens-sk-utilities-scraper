@@ -36,6 +36,7 @@ import datetime
 import httplib, urllib
 import lxml.etree
 import scraperwiki
+import sys
 
 REQUEST_HOST = '192.108.125.143'
 REQUEST_URI = '/geoserver/wfs'
@@ -59,6 +60,16 @@ REQUEST_BODY = """<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service
 BBOX_TEST = ('17.0629305', '48.1211625', '17.1029305', '48.1411625')
 BBOX_BA = ('16.922942', '48.041167', '17.242919', '48.221158')
 BBOX_SK = ('16.77497', '47.71372', '22.62519', '49.66433')
+
+# Morph.io schedules runs once a day.  We do not want to overload the
+# Siemens server too much thus we will try to get data only once a week.
+last_run = scraperwiki.sqlite.get_var('last_run')
+if last_run is not None:
+    tmp = datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S")
+    delta = datetime.datetime.utcnow() - tmp
+    if (delta.days < 7):
+        print '### data is quite fresh (%s), skipping run' % last_run
+        sys.exit()
 
 # read in a data from their Ajax back-end
 print '### connecting:',
@@ -107,5 +118,6 @@ for feature_members in tree_root.findall('gml:featureMembers', tree_root.nsmap):
 
 print 'done (%d items parsed)' % item_count
 
-# we're done, close the connection
+# we're done, close the connection and note run time
 conn.close()
+scraperwiki.sqlite.save_var('last_run', datetime.datetime.utcnow().replace(microsecond=0).isoformat())
