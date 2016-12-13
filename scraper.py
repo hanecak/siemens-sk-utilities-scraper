@@ -63,7 +63,7 @@ BBOX_SK = ('16.77497', '47.71372', '22.62519', '49.66433')
 # read in a data from their Ajax back-end
 print '### connecting:',
 conn = httplib.HTTPConnection(REQUEST_HOST)
-conn.request('POST', REQUEST_URI, REQUEST_BODY % BBOX_BA, REQUEST_HEADERS)
+conn.request('POST', REQUEST_URI, REQUEST_BODY % BBOX_SK, REQUEST_HEADERS)
 response = conn.getresponse()
 print 'done'
 
