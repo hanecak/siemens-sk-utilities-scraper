@@ -85,10 +85,6 @@ tree_root = tree.getroot()
 item_count = 0
 for feature_members in tree_root.findall('gml:featureMembers', tree_root.nsmap):
     for frame in feature_members.findall('slm:frm', tree_root.nsmap):
-        frm_gml_id = frame.attrib.get('{http://www.opengis.net/gml}id')
-        #print 'XXX', frm_gml_id
-
-        fmr_slm_id = frame.find('slm:id', tree_root.nsmap).text
         fmr_slm_smid = frame.find('slm:smid', tree_root.nsmap).text
         fmr_slm_smcislo = frame.find('slm:smcislo', tree_root.nsmap).text
         fmr_slm_aktivne = frame.find('slm:aktivne', tree_root.nsmap).text
@@ -102,10 +98,8 @@ for feature_members in tree_root.findall('gml:featureMembers', tree_root.nsmap):
         position_lon = temp[1]
 
         scraperwiki.sqlite.save(
-            unique_keys=['gml_id', 'slm_id', 'smcislo', 'smcislo'],
+            unique_keys=['smcislo', 'smcislo'],
             data={
-                'gml_id': frm_gml_id,
-                'slm_id': fmr_slm_id,
                 'smid': fmr_slm_smid,
                 'smcislo': fmr_slm_smcislo,
                 'aktivne': fmr_slm_aktivne,
